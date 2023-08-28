@@ -1,4 +1,5 @@
 import React from 'react';
+import { nanoid } from 'nanoid';
 import './App.css';
 
 class App extends React.Component { // extend to use the methods of the parent components
@@ -8,7 +9,7 @@ class App extends React.Component { // extend to use the methods of the parent c
     // concept of state - keeping track of the data
     this.state = {
       // set the key/values i want to track
-      todos: [],
+      todos: [{'id': 1, 'text': 'Walk the fish'}, {'id': 2, 'text': 'Feed my rock'}], // this is an array of strings, i need an array of ? to add an id 
       text: "",
       isClicked: false
     };
@@ -42,13 +43,34 @@ class App extends React.Component { // extend to use the methods of the parent c
 
 handleSubmit = () => {
   this.setState({
-    // todos: [this.state.text] // at this point it doesn't clear the text field and it overwrites previous todo
-
-    // use spread (...) to get all the existing todos first
-    // then add the next todo to the end
-    todos: [...this.state.todos, this.state.text],
+    todos: [...this.state.todos, {id: nanoid(), text: this.state.text}],
     text: ""
 
+  })
+}
+
+/**
+ * deleting a todo is a little different bc we need to know which todo to remove
+ * so each todo needs an id 
+ * so if a todo now an id and text, what do i do
+ * 
+ */
+
+handleDelete = (id) => {
+  // console.log(id); // checking for right id 
+
+  const index = this.state.todos.findIndex(todo => todo.id === id);
+  console.log(index)
+
+  // make a copy of the array to work with (dont mutate directly)
+  const copy = [...this.state.todos];
+
+  // splice out the 1 todo at that index
+  copy.splice(index, 1)
+
+  // update state of todos with the copy
+  this.setState({
+    todos: copy
   })
 }
 
@@ -61,7 +83,9 @@ handleSubmit = () => {
 
         <ul>
           {this.state.todos.map( (todo) => {
-            return <li>{todo}</li>
+            return <li key={todo.id}>{todo.text}
+            <button onClick={() => this.handleDelete(todo.id) }>X</button>
+            </li>
           })}
         </ul>
 
